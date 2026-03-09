@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "ifc_mcp": {
-      "command": "ifc-mcp",
-      "args": ["serve"]
+      "command": "uvx",
+      "args": ["ifc-mcp", "serve"]
     }
   }
 }

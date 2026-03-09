@@ -13,11 +13,7 @@ A [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/
 
 ## Prerequisites
 
-Install the MCP server CLI:
-
-```bash
-pip install ifc-mcp
-```
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) — the MCP server is run via `uvx`, so no manual install of `ifc-mcp` is needed.
 
 ## Installation
 
