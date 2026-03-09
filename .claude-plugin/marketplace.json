@@ -1,0 +1,13 @@
+{
+  "name": "imants-marketplace",
+  "owner": {
+    "name": "Imants"
+  },
+  "plugins": [
+    {
+      "name": "ifc-mcp",
+      "source": "./plugins/ifc-mcp",
+      "description": "Explore and query IFC building models using natural language"
+    }
+  ]
+}
