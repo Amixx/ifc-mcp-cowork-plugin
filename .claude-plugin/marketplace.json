@@ -1,13 +1,13 @@
 {
-  "name": "imants-marketplace",
+  "name": "amixx-plugins",
   "owner": {
-    "name": "Imants"
+    "name": "Amixx"
   },
   "plugins": [
     {
-      "name": "ifc-mcp",
-      "source": "./plugins/ifc-mcp",
-      "description": "Explore and query IFC building models using natural language"
+      "name": "building-intelligence",
+      "source": "./plugins/building-intelligence",
+      "description": "Explore and query IFC building models"
     }
   ]
 }

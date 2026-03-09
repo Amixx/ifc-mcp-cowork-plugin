@@ -1,7 +1,7 @@
 {
-  "name": "ifc-mcp",
+  "name": "Building intelligence",
   "version": "0.1.0",
-  "description": "Explore and query IFC building models using natural language",
+  "description": "Explore and query IFC building models",
   "keywords": [
     "IFC",
     "BIM",
