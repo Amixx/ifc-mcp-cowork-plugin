@@ -2,7 +2,10 @@
   "mcpServers": {
     "ifc_mcp": {
       "command": "uvx",
-      "args": ["ifc-mcp", "serve"]
+      "args": ["ifc-mcp", "serve"],
+      "env": {
+        "FASTMCP_CHECK_FOR_UPDATES": "off"
+      }
     }
   }
 }
