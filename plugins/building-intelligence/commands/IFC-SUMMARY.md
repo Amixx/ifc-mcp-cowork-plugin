@@ -29,6 +29,8 @@ Report sections:
 
 Style:
 
-- Use concise tables where possible
-- Round quantities to 2 decimals
-- Include GUIDs only when listing individual elements
+- **Be concise. No filler. No AI slop.** Present information like a professional report — structured, factual, scannable.
+- Use tables for all tabular data. No verbose prose restating numbers.
+- Round quantities to 2 decimals.
+- Include GUIDs only when listing individual elements.
+- Do not narrate what tools were called or explain reasoning. Just present the report.

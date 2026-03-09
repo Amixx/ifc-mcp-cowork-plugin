@@ -16,10 +16,12 @@ Execution steps:
 
 Response format:
 
-- Loaded file path
-- Project/model label (if available from metadata/name fields)
+Present a brief summary — no narration, no filler. Just the facts:
+
+- File path
+- Project/model label (if available)
 - Schema version
-- Top element types (top 5 by count)
+- Top 5 element types by count (table)
 - Storey list
 
-If loading fails, return the error from `load_model` and suggest checking absolute path and file permissions.
+On failure: show the error and suggest checking path/permissions. Nothing more.

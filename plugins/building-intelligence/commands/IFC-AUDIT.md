@@ -46,8 +46,9 @@ Report sections:
 
 Style:
 
-- Use a clear header: "🏗️ IFC Model Audit Report"
-- Use tables for element counts and space summaries
-- Use ✅ / ⚠️ / ❌ icons for each check
-- Round quantities to 2 decimals
-- End with 1–2 sentence plain-language summary of model quality
+- **Be concise. No filler. No AI slop.** This is a professional audit report — structured, factual, scannable.
+- Header: "IFC Model Audit"
+- Use tables for element counts and space summaries.
+- Use ✅ / ⚠️ / ❌ icons for each check — one line per check, no verbose explanations.
+- Round quantities to 2 decimals.
+- End with 1–2 sentence summary of model quality. Make it direct and useful, not generic praise.
