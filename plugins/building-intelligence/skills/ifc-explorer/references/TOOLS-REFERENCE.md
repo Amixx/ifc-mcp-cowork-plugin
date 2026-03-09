@@ -10,17 +10,18 @@ Notes:
 
 ## Session tools
 
-### `load_model(file_path: str)`
+### `load_model(file_path: str, with_geometry: bool = False)`
 
-Loads/switches active IFC model.
+Loads/switches active IFC model. By default geometry is **not** loaded (10x+ faster). Pass `with_geometry=True` only when you need bounding-box data or accurate fallback volumes.
 
 Parameters:
 
 - `file_path` (required, absolute path recommended)
+- `with_geometry` (optional, default `false`) — load geometry bounds for all elements
 
 ### `get_loaded_model()`
 
-Returns active model path, cache list, cache count.
+Returns active model path, cache list, cache count, and `geometry_loaded` flag.
 
 Parameters:
 
@@ -196,7 +197,7 @@ Parameters:
 
 ### `get_element_geometry_bounds(global_id: str, file_path: str | None = None)`
 
-Returns element bbox min/max XYZ.
+Returns element bbox min/max XYZ. If bounds are missing, the server attempts on-demand extraction for that element and returns `source` as `on_demand` (then `cached` on subsequent calls). If extraction fails, `source` is `missing`.
 
 Parameters:
 

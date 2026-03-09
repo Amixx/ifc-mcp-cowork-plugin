@@ -10,7 +10,7 @@ Usage:
 
 Execution steps:
 
-1. Call `mcp__ifc_mcp__load_model(file_path="<path>")`
+1. Call `mcp__ifc_mcp__load_model(file_path="<path>")` — do NOT pass `with_geometry=True` (fast load by default)
 2. Call `mcp__ifc_mcp__get_model_summary()`
 3. Call `mcp__ifc_mcp__get_spatial_structure()`
 

@@ -13,14 +13,33 @@ Use this skill when the user wants to load, inspect, query, compare, or analyze 
 ## Workflow
 
 1. Check session state first:
-   - `mcp__ifc_mcp__get_loaded_model`
+   - `mcp__ifc_mcp__get_loaded_model` — also tells you if geometry is loaded (`geometry_loaded`)
 2. If no model is loaded (or user wants another file), load one:
    - `mcp__ifc_mcp__load_model(file_path="/absolute/path/to/model.ifc")`
+   - **Do NOT pass `with_geometry=True`** unless the task specifically needs bounding boxes or geometry-derived volumes. Loading without geometry is 10x+ faster.
 3. Start orientation with:
    - `mcp__ifc_mcp__get_model_summary`
 4. Then drill down with the right tool group.
+5. `get_element_geometry_bounds` computes bounds on demand and caches results. Reload with `with_geometry=True` only for geometry-heavy volume workflows.
 
 Most tools also accept optional `file_path` to run directly against a specific file without changing current session state.
+
+## Geometry loading
+
+Geometry is **off by default** for fast loading. Most tools work without it. Only reload with geometry when actually needed.
+
+**Geometry-sensitive behavior:**
+
+- `get_element_geometry_bounds` — computes bounds on demand and caches them; response includes `source` (`on_demand`/`cached`/`missing`).
+- `get_quantities` / `get_material_summary` — volume values may be under-reported for elements lacking quantity sets unless model was loaded with geometry (bbox fallback then available).
+
+**All other tools work fully without geometry** — spatial structure, search, properties, relationships, classifications, space summaries, etc.
+
+**When to load geometry:**
+
+- User needs many volume-heavy rollups where geometry bbox fallback should be available model-wide
+- User asks repeated geometry queries across many elements and wants lower per-call latency
+- Never load geometry "just in case" — it's expensive
 
 ## Tool group usage
 
