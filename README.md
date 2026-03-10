@@ -1,10 +1,10 @@
 # IntelliFence
 
-IntelliFence is a [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview) plugin that lets you explore and query IFC building models using natural language — powered by the [`ifc-mcp`](https://github.com/amixx/ifc-mcp) MCP server.
+IntelliFence is a Claude Cowork plugin (also compatible with Claude Code) that lets you explore and query IFC building models using natural language — powered by the [`ifc-mcp`](https://github.com/amixx/ifc-mcp) MCP server.
 
 ## Features
 
-- **Load & inspect** IFC models directly from your Claude Code session
+- **Load & inspect** IFC models directly from your Cowork session
 - **Spatial queries** — storeys, spaces, containment, connectivity
 - **Element search** — by class, property, classification, or type
 - **Quantity takeoffs** — areas, volumes, material breakdowns
@@ -14,15 +14,34 @@ IntelliFence is a [Claude Code](https://docs.anthropic.com/en/docs/agents-and-to
 
 ## Prerequisites
 
-- [uv](https://docs.astral.sh/uv/getting-started/installation/) — the MCP server is run via `uvx`, so no manual install of `ifc-mcp` is needed.
+- Python (with `pip`) — IntelliFence will install `uv` automatically if needed.
 
 ## Installation
 
-Install the plugin from the Claude Code marketplace or add it manually:
+### Cowork (recommended)
 
-```bash
-claude plugin add amixx/IntelliFence
+Use the Cowork plugin UI to install IntelliFence. Basic steps:
+
+1. Open Cowork, click on `Customize` in the sidebar, then click `Browse plugins`.
+2. Go to `Personal` tab, click `+` and then `Add marketplace from GitHub`.
+3. Paste this repository URL: `https://github.com/Amixx/ifc-mcp-cowork-plugin` and click `Sync`.
+4. the IntelliFence plugin should appear in the list, hover over the plugin and click `Install`.
+5. Start a new Cowork session, connect a folder with IFC files, and you're good to go!
+
+For a step-by-step guide with screenshots, see:
+
+- [Cowork install walkthrough](docs/COWORK-INSTALL.md)
+
+### Claude Code (optional)
+
+If you want IntelliFence inside Claude Code, add this repo as a marketplace and install the plugin:
+
 ```
+/plugin marketplace add https://github.com/Amixx/ifc-mcp-cowork-plugin
+/plugin install IntelliFence@amixx-plugins
+```
+
+If you only need IFC tools in Claude Code (no plugin commands/skills), you can add the `ifc-mcp` server directly via Claude Code's MCP configuration.
 
 ## Usage
 
@@ -43,8 +62,6 @@ Or just ask questions naturally — the IFC Explorer skill activates automatical
 - *"How much floor area is on Level 2?"*
 - *"Find all fire-rated walls"*
 - *"What materials are used in this building?"*
-
-```
 
 ## License
 
