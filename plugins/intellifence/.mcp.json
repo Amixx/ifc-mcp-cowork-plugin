@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "ifc_mcp": {
-      "command": "uvx",
-      "args": ["ifc-mcp", "serve"],
+      "command": "bash",
+      "args": ["-c", "command -v uvx > /dev/null || pip install uv; uvx ifc-mcp serve"],
       "env": {
         "FASTMCP_CHECK_FOR_UPDATES": "off"
       }
