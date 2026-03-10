@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BasicHouse — IFC Building Intelligence Report</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --bg2: #161b26;
+      --bg3: #1e2535;
+      --border: #2a3348;
+      --accent: #4f8ef7;
+      --accent2: #7c5cfc;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --teal: #14b8a6;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --card-radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* HEADER */
+    .header {
+      background: linear-gradient(135deg, #0f1117 0%, #1a1f35 50%, #0f1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 40px 48px 36px;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 320px; height: 320px;
+      background: radial-gradient(circle, rgba(79,142,247,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: 200px;
+      width: 240px; height: 240px;
+      background: radial-gradient(circle, rgba(124,92,252,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .header-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(79,142,247,0.15);
+      border: 1px solid rgba(79,142,247,0.3);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    .header-tag::before { content: '▸'; }
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #e2e8f0 30%, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .header-sub {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .header-sub span { color: #94a3b8; margin: 0 8px; }
+
+    /* LAYOUT */
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 48px; }
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* KPI CARDS */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .kpi-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      padding: 22px 20px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .kpi-card:hover { border-color: #3a4a68; }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: var(--card-radius) var(--card-radius) 0 0;
+    }
+    .kpi-card.blue::before  { background: linear-gradient(90deg, var(--accent), #7cb9f7); }
+    .kpi-card.purple::before { background: linear-gradient(90deg, var(--accent2), #a78cfc); }
+    .kpi-card.green::before  { background: linear-gradient(90deg, var(--green), #4ade80); }
+    .kpi-card.amber::before  { background: linear-gradient(90deg, var(--amber), #fcd34d); }
+    .kpi-card.teal::before   { background: linear-gradient(90deg, var(--teal), #2dd4bf); }
+    .kpi-card.red::before    { background: linear-gradient(90deg, var(--red), #f87171); }
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .kpi-value {
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .kpi-unit { font-size: 15px; font-weight: 400; color: var(--muted); margin-left: 2px; }
+    .kpi-note { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+    /* TWO-COL */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+
+    /* CARD */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      padding: 24px;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #94a3b8;
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card-title .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot-blue   { background: var(--accent); }
+    .dot-purple { background: var(--accent2); }
+    .dot-green  { background: var(--green); }
+    .dot-amber  { background: var(--amber); }
+    .dot-teal   { background: var(--teal); }
+    .dot-red    { background: var(--red); }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-align: left;
+      padding: 0 0 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    th.right, td.right { text-align: right; }
+    td {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(42,51,72,0.5);
+      font-size: 13px;
+      color: var(--text);
+    }
+    tr:last-child td { border-bottom: none; }
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .badge-ext { background: rgba(79,142,247,0.15); color: var(--accent); }
+    .badge-int { background: rgba(100,116,139,0.2); color: #94a3b8; }
+    .badge-fire { background: rgba(239,68,68,0.15); color: var(--red); }
+    .badge-prem { background: rgba(245,158,11,0.15); color: var(--amber); }
+
+    /* BAR */
+    .bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .bar-label { width: 140px; font-size: 12px; color: #94a3b8; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar-track { flex: 1; background: var(--bg3); border-radius: 4px; height: 8px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+    .bar-val { width: 55px; text-align: right; font-size: 12px; font-weight: 600; color: var(--text); flex-shrink: 0; }
+
+    /* CHART CONTAINER */
+    .chart-wrap { position: relative; height: 220px; }
+
+    /* FLOOR DIAGRAM */
+    .floor-diagram {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .floor-row {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .floor-badge {
+      background: rgba(79,142,247,0.2);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .floor-badge.f1 { background: rgba(124,92,252,0.2); color: var(--accent2); }
+    .floor-stats {
+      flex: 1;
+      display: flex;
+      gap: 24px;
+    }
+    .floor-stat { display: flex; flex-direction: column; }
+    .floor-stat-val { font-weight: 700; font-size: 18px; }
+    .floor-stat-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* PSET */
+    .pset-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pset-tag {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: #94a3b8;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .pset-tag .count {
+      background: rgba(79,142,247,0.2);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    /* MATERIAL ROW */
+    .mat-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(42,51,72,0.5);
+    }
+    .mat-row:last-child { border-bottom: none; }
+    .mat-swatch {
+      width: 10px; height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .mat-name { flex: 1; font-size: 12px; }
+    .mat-count { font-size: 11px; color: var(--muted); width: 50px; text-align: right; }
+    .mat-vol { font-size: 12px; font-weight: 600; width: 60px; text-align: right; }
+
+    /* INFO BOX */
+    .info-box {
+      background: rgba(79,142,247,0.06);
+      border: 1px solid rgba(79,142,247,0.2);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 40px;
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .info-icon { font-size: 18px; flex-shrink: 0; }
+    .info-text { font-size: 13px; color: #94a3b8; line-height: 1.7; }
+    .info-text strong { color: var(--text); }
+
+    /* FOOTER */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .footer-logo {
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    @media (max-width: 900px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .two-col, .three-col { grid-template-columns: 1fr; }
+      .container { padding: 24px 20px; }
+      .header { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-tag">IFC Building Intelligence</div>
+  <h1>BasicHouse</h1>
+  <div class="header-sub">
+    IFC2X3 &nbsp;·&nbsp; Autodesk Revit 2021
+    <span>|</span>
+    Exported 2020-11-30
+    <span>|</span>
+    2 Storeys &nbsp;·&nbsp; 124 Elements
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- KPI STRIP -->
+  <div class="section-title">Key Metrics</div>
+  <div class="kpi-grid">
+    <div class="kpi-card blue">
+      <div class="kpi-label">Total Model Area</div>
+      <div class="kpi-value">1,529<span class="kpi-unit">m²</span></div>
+      <div class="kpi-note">Across all element types</div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-label">Total Volume</div>
+      <div class="kpi-value">197<span class="kpi-unit">m³</span></div>
+      <div class="kpi-note">Structural + envelope</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">Concrete (Betong)</div>
+      <div class="kpi-value">143.5<span class="kpi-unit">m³</span></div>
+      <div class="kpi-note">Slabs + walls combined</div>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-label">Furnishing Elements</div>
+      <div class="kpi-value">71<span class="kpi-unit"> el.</span></div>
+      <div class="kpi-note">27 distinct furniture types</div>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card teal">
+      <div class="kpi-label">Walls</div>
+      <div class="kpi-value">13<span class="kpi-unit"> walls</span></div>
+      <div class="kpi-note">4 exterior · 9 interior</div>
+    </div>
+    <div class="kpi-card blue">
+      <div class="kpi-label">Windows</div>
+      <div class="kpi-value">19<span class="kpi-unit"> win.</span></div>
+      <div class="kpi-note">61.9 m² glazing area</div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-label">Doors</div>
+      <div class="kpi-value">8<span class="kpi-unit"> doors</span></div>
+      <div class="kpi-note">All fire-rated (Pset)</div>
+    </div>
+    <div class="kpi-card red">
+      <div class="kpi-label">Property Sets</div>
+      <div class="kpi-value">55<span class="kpi-unit"> psets</span></div>
+      <div class="kpi-note">IFC + Revit custom sets</div>
+    </div>
+  </div>
+
+  <!-- FLOOR STRUCTURE -->
+  <div class="section-title">Spatial Structure</div>
+  <div class="card" style="margin-bottom:40px;">
+    <div class="card-title"><span class="dot dot-blue"></span>Building Storeys — Surface:1310134 → Building Name</div>
+    <div class="floor-diagram">
+      <div class="floor-row">
+        <div class="floor-badge">Floor 0</div>
+        <div class="floor-stats">
+          <div class="floor-stat">
+            <div class="floor-stat-val" style="color:var(--accent);">123</div>
+            <div class="floor-stat-lbl">Elements</div>
+          </div>
+          <div class="floor-stat">
+            <div class="floor-stat-val" style="color:var(--green);">13</div>
+            <div class="floor-stat-lbl">Walls</div>
+          </div>
+          <div class="floor-stat">
+            <div class="floor-stat-val" style="color:var(--amber);">71</div>
+            <div class="floor-stat-lbl">Furnishings</div>
+          </div>
+          <div class="floor-stat">
+            <div class="floor-stat-val" style="color:var(--teal);">19</div>
+            <div class="floor-stat-lbl">Windows</div>
+          </div>
+          <div class="floor-stat">
+            <div class="floor-stat-val" style="color:var(--accent2);">8</div>
+            <div class="floor-stat-lbl">Doors</div>
+          </div>
+        </div>
+      </div>
+      <div class="floor-row">
+        <div class="floor-badge f1">Floor 1</div>
+        <div class="floor-stats">
+          <div class="floor-stat">
+            <div class="floor-stat-val" style="color:var(--accent2);">1</div>
+            <div class="floor-stat-lbl">Elements</div>
+          </div>
+          <div class="floor-stat">
+            <div class="floor-stat-val" style="color:var(--muted);">—</div>
+            <div class="floor-stat-lbl">Walls</div>
+          </div>
+          <div class="floor-stat">
+            <div class="floor-stat-val" style="color:var(--muted);">—</div>
+            <div class="floor-stat-lbl">Furnishings</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STRUCTURAL + CHART -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title"><span class="dot dot-green"></span>Structural Elements — Volume Breakdown</div>
+      <div class="chart-wrap">
+        <canvas id="structChart"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-blue"></span>Element Count Distribution</div>
+      <div class="chart-wrap">
+        <canvas id="countChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- WALL INVENTORY -->
+  <div class="section-title">Wall Inventory</div>
+  <div class="card" style="margin-bottom:40px;">
+    <div class="card-title"><span class="dot dot-teal"></span>13 Walls · 205.7 m² · 79.1 m³ · Paroc insulation system</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Direction</th>
+          <th>System</th>
+          <th>Class</th>
+          <th class="right">GlobalId</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="badge badge-ext">Exterior</span></td><td>North</td><td>Yttervägg Paroc</td><td>IfcWallStandardCase</td><td class="right" style="font-family:monospace;font-size:11px;color:var(--muted);">2DedXzn…qBp</td></tr>
+        <tr><td><span class="badge badge-ext">Exterior</span></td><td>East</td><td>Yttervägg Paroc</td><td>IfcWallStandardCase</td><td class="right" style="font-family:monospace;font-size:11px;color:var(--muted);">2DedXzn…qBo</td></tr>
+        <tr><td><span class="badge badge-ext">Exterior</span></td><td>South</td><td>Yttervägg Paroc</td><td>IfcWallStandardCase</td><td class="right" style="font-family:monospace;font-size:11px;color:var(--muted);">2DedXzn…qBn</td></tr>
+        <tr><td><span class="badge badge-ext">Exterior</span></td><td>West</td><td>Yttervägg Paroc</td><td>IfcWallStandardCase</td><td class="right" style="font-family:monospace;font-size:11px;color:var(--muted);">2DedXzn…qBm</td></tr>
+        <tr><td><span class="badge badge-int">Interior</span></td><td>East</td><td>Innervägg 170mm Paroc</td><td>IfcWallStandardCase</td><td class="right" style="font-family:monospace;font-size:11px;color:var(--muted);">2DedXzn…qBj</td></tr>
+        <tr><td><span class="badge badge-int">Interior</span></td><td>North</td><td>Innervägg 170mm Paroc</td><td>IfcWallStandardCase</td><td class="right" style="font-family:monospace;font-size:11px;color:var(--muted);">2DedXzn…qBh</td></tr>
+        <tr><td><span class="badge badge-int">Interior</span></td><td>West</td><td>Innervägg 170mm Paroc</td><td>IfcWallStandardCase</td><td class="right" style="font-family:monospace;font-size:11px;color:var(--muted);">2DedXzn…qBg</td></tr>
+        <tr><td><span class="badge badge-int">Interior</span></td><td>East</td><td>Innervägg 170mm Paroc</td><td>IfcWallStandardCase</td><td class="right" style="font-family:monospace;font-size:11px;color:var(--muted);">2DedXzn…qBf</td></tr>
+        <tr><td><span class="badge badge-int">Interior</span></td><td>East</td><td>Innervägg 170mm Paroc</td><td>IfcWallStandardCase</td><td class="right" style="font-family:monospace;font-size:11px;color:var(--muted);">2DedXzn…qBe</td></tr>
+        <tr><td><span class="badge badge-int">Interior</span></td><td>South</td><td>Innervägg 170mm Paroc</td><td>IfcWallStandardCase</td><td class="right" style="font-family:monospace;font-size:11px;color:var(--muted);">2DedXzn…qBd</td></tr>
+        <tr><td><span class="badge badge-int">Interior</span></td><td>South</td><td>Innervägg 170mm Paroc</td><td>IfcWallStandardCase</td><td class="right" style="font-family:monospace;font-size:11px;color:var(--muted);">2DedXzn…qBc</td></tr>
+        <tr><td><span class="badge badge-int">Interior</span></td><td>East</td><td>Innervägg 170mm Paroc</td><td>IfcWallStandardCase</td><td class="right" style="font-family:monospace;font-size:11px;color:var(--muted);">2DedXzn…q9K</td></tr>
+        <tr><td><span class="badge badge-int">Interior</span></td><td>South</td><td>Innervägg 170mm Paroc</td><td>IfcWallStandardCase</td><td class="right" style="font-family:monospace;font-size:11px;color:var(--muted);">2DedXzn…rm$</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MATERIAL VOLUMES -->
+  <div class="section-title">Material Volume Analysis</div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title"><span class="dot dot-amber"></span>Top Materials by Volume (m³)</div>
+      <div id="matBars"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-purple"></span>Volume Composition</div>
+      <div class="chart-wrap">
+        <canvas id="matChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREMIUM FURNITURE -->
+  <div class="section-title">Premium Furniture Materials</div>
+  <div class="three-col">
+    <div class="card">
+      <div class="card-title"><span class="dot dot-amber"></span>Hardwoods</div>
+      <div class="mat-row">
+        <div class="mat-swatch" style="background:#c0763a;"></div>
+        <div class="mat-name">Cherry</div>
+        <div class="mat-count">13 el.</div>
+        <div class="mat-vol">12.04 m³</div>
+      </div>
+      <div class="mat-row">
+        <div class="mat-swatch" style="background:#d4b896;"></div>
+        <div class="mat-name">Birch</div>
+        <div class="mat-count">2 el.</div>
+        <div class="mat-vol">0.67 m³</div>
+      </div>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Cherry dominance</div>
+        <div style="background:var(--bg3);border-radius:4px;height:6px;overflow:hidden;">
+          <div style="background:linear-gradient(90deg,#c0763a,#e8944a);height:100%;width:95%;border-radius:4px;"></div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">95% of hardwood volume is cherry</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-blue"></span>Metals &amp; Glass</div>
+      <div class="mat-row">
+        <div class="mat-swatch" style="background:#aab8c8;"></div>
+        <div class="mat-name">Metal - Chrome</div>
+        <div class="mat-count">6 el.</div>
+        <div class="mat-vol">0.95 m³</div>
+      </div>
+      <div class="mat-row">
+        <div class="mat-swatch" style="background:#c8d4df;"></div>
+        <div class="mat-name">Steel, Chrome Plated</div>
+        <div class="mat-count">41 el.</div>
+        <div class="mat-vol">6.04 m³</div>
+      </div>
+      <div class="mat-row">
+        <div class="mat-swatch" style="background:rgba(150,200,240,0.6);border:1px solid #4f8ef7;"></div>
+        <div class="mat-name">Glass - Clear, Grey</div>
+        <div class="mat-count">5 el.</div>
+        <div class="mat-vol">0.56 m³</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-teal"></span>Upholstery &amp; Textiles</div>
+      <div class="mat-row">
+        <div class="mat-swatch" style="background:#1a1a1a;border:1px solid #444;"></div>
+        <div class="mat-name">Leather - Black</div>
+        <div class="mat-count">6 el.</div>
+        <div class="mat-vol">0.95 m³</div>
+      </div>
+      <div class="mat-row">
+        <div class="mat-swatch" style="background:#f5f0e8;border:1px solid #ddd;"></div>
+        <div class="mat-name">Linen, White</div>
+        <div class="mat-count">6 el.</div>
+        <div class="mat-vol">2.97 m³</div>
+      </div>
+      <div class="mat-row">
+        <div class="mat-swatch" style="background:#8b7355;"></div>
+        <div class="mat-name">Textile - Bamboo Weave</div>
+        <div class="mat-count">10 el.</div>
+        <div class="mat-vol">0.10 m³</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIRE RATING + OPENINGS -->
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title"><span class="dot dot-red"></span>Fire-Rated Doors — 8 / 8 Compliant</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>D9 · 1298042</td><td>Innerdörr</td><td><span class="badge badge-fire">Fire Rating ✓</span></td></tr>
+          <tr><td>D9 · 1298043</td><td>Innerdörr</td><td><span class="badge badge-fire">Fire Rating ✓</span></td></tr>
+          <tr><td>D9 · 1298044</td><td>Innerdörr</td><td><span class="badge badge-fire">Fire Rating ✓</span></td></tr>
+          <tr><td>D9 · 1298045</td><td>Innerdörr</td><td><span class="badge badge-fire">Fire Rating ✓</span></td></tr>
+          <tr><td>D9 · 1298046</td><td>Innerdörr</td><td><span class="badge badge-fire">Fire Rating ✓</span></td></tr>
+          <tr><td>D10 · 1298083</td><td>Ytterdörr</td><td><span class="badge badge-fire">Fire Rating ✓</span></td></tr>
+          <tr><td>D10 · 1298084</td><td>Ytterdörr</td><td><span class="badge badge-fire">Fire Rating ✓</span></td></tr>
+          <tr><td>D9 · 1298130</td><td>Innerdörr</td><td><span class="badge badge-fire">Fire Rating ✓</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dot-blue"></span>Glazing &amp; Openings</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th class="right">Count</th>
+            <th class="right">Area (m²)</th>
+            <th class="right">Volume (m³)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Windows</td>
+            <td class="right">19</td>
+            <td class="right">61.93</td>
+            <td class="right">0.96</td>
+          </tr>
+          <tr>
+            <td>Doors</td>
+            <td class="right">8</td>
+            <td class="right">24.36</td>
+            <td class="right">1.07</td>
+          </tr>
+          <tr>
+            <td>Openings (voids)</td>
+            <td class="right">28</td>
+            <td class="right">—</td>
+            <td class="right">—</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:20px;">
+        <div class="bar-row">
+          <div class="bar-label">Glazing ratio</div>
+          <div class="bar-track"><div class="bar-fill" style="width:40%;background:linear-gradient(90deg,var(--accent),#7cb9f7);"></div></div>
+          <div class="bar-val" style="color:var(--accent);">4.1%</div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);">61.9 m² glass / 1,529 m² total area</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROPERTY SETS -->
+  <div class="section-title" style="margin-top:40px;">Property Set Coverage</div>
+  <div class="card" style="margin-bottom:40px;">
+    <div class="card-title"><span class="dot dot-purple"></span>55 Property Sets · IFC Standard + Revit Custom</div>
+    <div class="pset-cloud" id="psetCloud"></div>
+  </div>
+
+  <!-- INFO CALLOUT -->
+  <div class="info-box">
+    <div class="info-icon">🏗️</div>
+    <div class="info-text">
+      <strong>Model Notes:</strong> BasicHouse is a richly detailed Scandinavian-style residential model authored in Revit 2021.
+      The structural system is <strong>concrete-dominant</strong> (143.5 m³ of Betong across slabs and walls), wrapped in a
+      <strong>Paroc insulation envelope</strong> (4 exterior + 9 interior walls). Interior specification is premium — cherry hardwood,
+      black leather, and chrome accents define the furniture palette. All 8 doors carry the <strong>FireRating</strong> property set.
+      No IfcSpaces are defined, but <strong>28 void openings</strong> are modelled for window and door cutouts.
+      The model carries <strong>55 distinct property sets</strong> including reinforcement pitch data
+      (Pset_ReinforcementBarPitchOfSlab, Pset_ReinforcementBarPitchOfWall) suggesting structural engineering intent.
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-logo">⬡ IntelliFence &nbsp;·&nbsp; IFC Building Intelligence</div>
+  <div>Generated 2026-03-11 &nbsp;·&nbsp; BasicHouse.ifc &nbsp;·&nbsp; IFC2X3 Schema</div>
+</div>
+
+<script>
+// ---- STRUCTURAL VOLUME CHART ----
+new Chart(document.getElementById('structChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Slabs', 'Walls', 'Furnishings', 'Roof\n(raw)', 'Windows', 'Doors'],
+    datasets: [{
+      data: [84.36, 79.10, 19.46, 39.89, 0.96, 1.07],
+      backgroundColor: [
+        'rgba(79,142,247,0.75)',
+        'rgba(124,92,252,0.75)',
+        'rgba(245,158,11,0.75)',
+        'rgba(20,184,166,0.75)',
+        'rgba(34,197,94,0.75)',
+        'rgba(239,68,68,0.75)',
+      ],
+      borderColor: [
+        'rgba(79,142,247,1)',
+        'rgba(124,92,252,1)',
+        'rgba(245,158,11,1)',
+        'rgba(20,184,166,1)',
+        'rgba(34,197,94,1)',
+        'rgba(239,68,68,1)',
+      ],
+      borderWidth: 1,
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: 'rgba(42,51,72,0.5)' }, ticks: { color: '#64748b', font: { size: 11 } } },
+      y: { grid: { color: 'rgba(42,51,72,0.5)' }, ticks: { color: '#64748b', font: { size: 11 } },
+           title: { display: true, text: 'm³', color: '#64748b', font: { size: 11 } } }
+    }
+  }
+});
+
+// ---- COUNT DISTRIBUTION CHART ----
+new Chart(document.getElementById('countChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Furnishings (71)', 'Windows (19)', 'Walls (13)', 'Doors (8)', 'Openings (28)', 'Other (9)'],
+    datasets: [{
+      data: [71, 19, 13, 8, 28, 9],
+      backgroundColor: [
+        'rgba(245,158,11,0.8)',
+        'rgba(79,142,247,0.8)',
+        'rgba(20,184,166,0.8)',
+        'rgba(239,68,68,0.8)',
+        'rgba(124,92,252,0.8)',
+        'rgba(100,116,139,0.6)',
+      ],
+      borderColor: '#1e2535',
+      borderWidth: 2,
+      hoverOffset: 8,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '62%',
+    plugins: {
+      legend: {
+        position: 'right',
+        labels: { color: '#94a3b8', font: { size: 11 }, boxWidth: 12, padding: 10 }
+      }
+    }
+  }
+});
+
+// ---- MATERIAL COMPOSITION CHART ----
+new Chart(document.getElementById('matChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Concrete (143.5)', 'Roof Plate (39.9)', 'Timber Deck (19.9)', 'Tar Paper (19.9)', 'Cherry (12.0)', 'Lam. Ivory Matte (12.5)', 'Other'],
+    datasets: [{
+      data: [143.5, 39.9, 19.9, 19.9, 12.0, 12.5, 49.6],
+      backgroundColor: [
+        'rgba(100,116,139,0.85)',
+        'rgba(20,184,166,0.8)',
+        'rgba(245,158,11,0.8)',
+        'rgba(71,85,105,0.8)',
+        'rgba(192,118,58,0.85)',
+        'rgba(124,92,252,0.75)',
+        'rgba(79,142,247,0.5)',
+      ],
+      borderColor: '#1e2535',
+      borderWidth: 2,
+      hoverOffset: 8,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '62%',
+    plugins: {
+      legend: {
+        position: 'right',
+        labels: { color: '#94a3b8', font: { size: 10 }, boxWidth: 10, padding: 8 }
+      }
+    }
+  }
+});
+
+// ---- MATERIAL BARS ----
+const materials = [
+  { name: 'Concrete (Betong)', vol: 143.5, color: '#64748b' },
+  { name: 'Roof Plate (Takplåt)', vol: 39.9, color: '#14b8a6' },
+  { name: 'Timber Deck (Råspont)', vol: 19.9, color: '#f59e0b' },
+  { name: 'Tar Paper (Tjärpapp)', vol: 19.9, color: '#475569' },
+  { name: 'Lam. Ivory, Matte', vol: 12.5, color: '#7c5cfc' },
+  { name: 'Cherry', vol: 12.0, color: '#c0763a' },
+  { name: 'Lam. Ivory, Glossy', vol: 10.7, color: '#a78cfc' },
+  { name: 'Steel, Chrome Plated', vol: 6.0, color: '#94a3b8' },
+  { name: 'Linen, White', vol: 3.0, color: '#e2e8f0' },
+];
+const maxVol = 143.5;
+const container = document.getElementById('matBars');
+materials.forEach(m => {
+  const pct = (m.vol / maxVol * 100).toFixed(1);
+  container.innerHTML += `
+    <div class="bar-row">
+      <div class="bar-label" title="${m.name}">${m.name}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct}%;background:${m.color};opacity:0.85;"></div>
+      </div>
+      <div class="bar-val">${m.vol} m³</div>
+    </div>`;
+});
+
+// ---- PROPERTY SET CLOUD ----
+const psets = [
+  { name: 'Pset_WallCommon', n: 15 },
+  { name: 'Pset_DoorCommon', n: 11 },
+  { name: 'Pset_WindowCommon', n: 25 },
+  { name: 'Pset_SlabCommon', n: 6 },
+  { name: 'Pset_RoofCommon', n: 1 },
+  { name: 'Pset_ConcreteElementGeneral', n: 11 },
+  { name: 'Pset_ReinforcementBarPitchOfWall', n: 15 },
+  { name: 'Pset_ReinforcementBarPitchOfSlab', n: 6 },
+  { name: 'Pset_ManufacturerTypeInformation', n: 34 },
+  { name: 'Pset_ProductRequirements', n: 181 },
+  { name: 'Pset_QuantityTakeOff', n: 177 },
+  { name: 'Pset_BuildingCommon', n: 1 },
+  { name: 'Pset_ElementShading', n: 22 },
+  { name: 'Pset_BuildingStoreyCommon', n: 2 },
+  { name: 'Pset_OpeningElementCommon', n: 1 },
+  { name: 'Pset_ProvisionForVoid', n: 7 },
+  { name: 'BaseQuantities', n: 71 },
+  { name: 'Analytical Properties', n: 57 },
+  { name: 'Construction', n: 58 },
+  { name: 'Materials and Finishes', n: 114 },
+  { name: 'Energy Analysis', n: 6 },
+  { name: 'Electrical - Loads', n: 6 },
+  { name: 'Identity Data', n: 178 },
+  { name: 'Custom_Pset', n: 168 },
+  { name: 'Dimensions', n: 166 },
+  { name: 'Dörrförteckning', n: 11 },
+  { name: 'Fönsterförteckning', n: 25 },
+  { name: 'Väggförteckning', n: 15 },
+];
+const cloud = document.getElementById('psetCloud');
+psets.forEach(p => {
+  cloud.innerHTML += `<div class="pset-tag">${p.name} <span class="count">${p.n}</span></div>`;
+});
+</script>
+</body>
+</html>
