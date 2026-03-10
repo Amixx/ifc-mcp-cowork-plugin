@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IFC MCP Cowork Plugin — Showcase</title>
+    <style>
+      :root {
+        --bg: #0f1117;
+        --bg2: #161b26;
+        --border: #2a3348;
+        --accent: #4f8ef7;
+        --text: #e2e8f0;
+        --muted: #64748b;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        padding: 60px 20px;
+      }
+      .container { max-width: 640px; width: 100%; }
+      h1 {
+        font-size: 1.8rem;
+        margin-bottom: 8px;
+      }
+      .subtitle {
+        color: var(--muted);
+        margin-bottom: 40px;
+      }
+      .card {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px 24px;
+        display: block;
+        text-decoration: none;
+        color: var(--text);
+        transition: border-color 0.2s;
+      }
+      .card:hover {
+        border-color: var(--accent);
+      }
+      .card h2 {
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+      }
+      .card p {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>IFC MCP Cowork Plugin</h1>
+      <p class="subtitle">Showcase of generated IFC building reports</p>
+      <a class="card" href="BasicHouse_Report.html">
+        <h2>BasicHouse — IFC Building Intelligence Report</h2>
+        <p>Comprehensive analysis of a basic house IFC model</p>
+      </a>
+    </div>
+  </body>
+</html>
