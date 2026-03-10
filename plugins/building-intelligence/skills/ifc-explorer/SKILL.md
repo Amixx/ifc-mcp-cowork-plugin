@@ -13,7 +13,7 @@ Use this skill when the user wants to load, inspect, query, compare, or analyze 
 ## Workflow
 
 1. Check session state first:
-   - `mcp__ifc_mcp__get_loaded_model` — also tells you if geometry is loaded (`geometry_loaded`)
+   - `mcp__ifc_mcp__get_loaded_model` — also tells you if geometry is loaded (`geometry_loaded`) and running server version (`server_version`)
 2. If no model is loaded (or user wants another file), load one:
    - `mcp__ifc_mcp__load_model(file_path="/absolute/path/to/model.ifc")`
    - **Do NOT pass `with_geometry=True`** unless the task specifically needs bounding boxes or geometry-derived volumes. Loading without geometry is 10x+ faster.

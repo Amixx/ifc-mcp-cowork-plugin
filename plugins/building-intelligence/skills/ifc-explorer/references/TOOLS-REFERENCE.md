@@ -21,7 +21,15 @@ Parameters:
 
 ### `get_loaded_model()`
 
-Returns active model path, cache list, cache count, and `geometry_loaded` flag.
+Returns active model path, cache list, cache count, `geometry_loaded`, and `server_version`.
+
+Parameters:
+
+- none
+
+### `get_server_info()`
+
+Returns server identity/runtime details for debugging deployment/version issues.
 
 Parameters:
 

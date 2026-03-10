@@ -9,6 +9,7 @@ A [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/
 - **Element search** — by class, property, classification, or type
 - **Quantity takeoffs** — areas, volumes, material breakdowns
 - **Slash commands** — `/load-ifc` and `/ifc-summary` for quick workflows
+- **Debug command** — `/ifc-version` to confirm active server version/runtime
 - **IFC Explorer skill** — guides Claude through multi-step analysis tasks
 
 ## Prerequisites
