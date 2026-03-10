@@ -1,6 +1,6 @@
-# ifc-mcp-cowork-plugin
+# IntelliFence
 
-A [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview) plugin that lets you explore and query IFC building models using natural language — powered by the [`ifc-mcp`](https://github.com/amixx/ifc-mcp) MCP server.
+IntelliFence is a [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview) plugin that lets you explore and query IFC building models using natural language — powered by the [`ifc-mcp`](https://github.com/amixx/ifc-mcp) MCP server.
 
 ## Features
 
@@ -21,7 +21,7 @@ A [Claude Code](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/
 Install the plugin from the Claude Code marketplace or add it manually:
 
 ```bash
-claude plugin add amixx/ifc-mcp-cowork-plugin
+claude plugin add amixx/IntelliFence
 ```
 
 ## Usage

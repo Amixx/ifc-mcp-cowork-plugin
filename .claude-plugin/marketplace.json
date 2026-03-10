@@ -5,8 +5,8 @@
   },
   "plugins": [
     {
-      "name": "building-intelligence",
-      "source": "./plugins/building-intelligence",
+      "name": "IntelliFence",
+      "source": "./plugins/intellifence",
       "description": "Explore and query IFC building models"
     }
   ]

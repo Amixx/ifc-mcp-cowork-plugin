@@ -2,5 +2,5 @@
 set -euo pipefail
 
 cd "$(dirname "$0")"
-cd ./plugins/building-intelligence
-zip -r ../../../ifc-mcp.plugin . -x "*.DS_Store" -x ".git/*" -x "node_modules/*" -x "__pycache__/*"
+cd ./plugins/intellifence
+zip -r ../../../IntelliFence.plugin . -x "*.DS_Store" -x ".git/*" -x "node_modules/*" -x "__pycache__/*"
